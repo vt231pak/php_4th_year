@@ -1,33 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Enrollment index{% endblock %}
+{% block title %}Список записів{% endblock %}
 
 {% block body %}
-    <h1>Enrollment index</h1>
+    <h1>Список записів</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for enrollment in enrollments %}
-            <tr>
-                <td>{{ enrollment.id }}</td>
-                <td>
-                    <a href="{{ path('app_enrollment_show', {'id': enrollment.id}) }}">show</a>
-                    <a href="{{ path('app_enrollment_edit', {'id': enrollment.id}) }}">edit</a>
-                </td>
-            </tr>
+    <form method="get">
+        <input type="text" name="student" placeholder="Ім'я студента" value="{{ app.request.get('student') }}">
+        <input type="text" name="course" placeholder="Назва курсу" value="{{ app.request.get('course') }}">
+        <input type="number" name="itemsPerPage" min="1" max="100" value="{{ app.request.get('itemsPerPage', 10) }}">
+        <button type="submit">Фільтрувати</button>
+    </form>
+
+    <ul>
+        {% for enrollment in pagination %}
+            <li>
+                Студент: {{ enrollment.student ? enrollment.student.name : '—' }},
+                Курс: {{ enrollment.course ? enrollment.course.name : '—' }}
+            </li>
         {% else %}
-            <tr>
-                <td colspan="2">no records found</td>
-            </tr>
+            <li>Записів не знайдено.</li>
         {% endfor %}
-        </tbody>
-    </table>
+    </ul>
 
-    <a href="{{ path('app_enrollment_new') }}">Create new</a>
+    {{ knp_pagination_render(pagination) }}
+
+    <a href="{{ path('app_enrollment_new') }}">Створити новий запис</a>
 {% endblock %}

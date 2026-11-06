@@ -7,9 +7,22 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $items = Student::all();
+        $query = Student::query();
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+        if ($request->filled('email')) {
+            $query->where('email', 'like', '%' . $request->email . '%');
+        }
+        if ($request->filled('birthdate')) {
+            $query->where('birthdate', $request->birthdate);
+        }
+
+        $items = $query->paginate($request->input('itemsPerPage', 10));
+
         return view('students.index', compact('items'));
     }
 

@@ -10,14 +10,35 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/enrollment')]
 final class EnrollmentController extends AbstractController{
     #[Route(name: 'app_enrollment_index', methods: ['GET'])]
-    public function index(EnrollmentRepository $enrollmentRepository): Response
+    public function index(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
+        $queryBuilder = $em->getRepository(Enrollment::class)->createQueryBuilder('e')
+            ->leftJoin('e.student', 's')
+            ->leftJoin('e.course', 'c');
+
+        if ($request->query->get('student')) {
+            $queryBuilder->andWhere('s.name LIKE :student')
+                ->setParameter('student', '%' . $request->query->get('student') . '%');
+        }
+
+        if ($request->query->get('course')) {
+            $queryBuilder->andWhere('c.name LIKE :course')
+                ->setParameter('course', '%' . $request->query->get('course') . '%');
+        }
+
+        $pagination = $paginator->paginate(
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            $request->query->getInt('itemsPerPage', 10)
+        );
+
         return $this->render('enrollment/index.html.twig', [
-            'enrollments' => $enrollmentRepository->findAll(),
+            'pagination' => $pagination
         ]);
     }
 

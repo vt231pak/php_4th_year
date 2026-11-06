@@ -7,9 +7,19 @@ use Illuminate\Http\Request;
 
 class GradeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $items = Grade::all();
+        $query = Grade::with('enrollment');
+
+        if ($request->filled('score')) {
+            $query->where('score', $request->score);
+        }
+        if ($request->filled('enrollment_id')) {
+            $query->where('enrollment_id', $request->enrollment_id);
+        }
+
+        $items = $query->paginate($request->input('itemsPerPage', 10));
+
         return view('grades.index', compact('items'));
     }
 

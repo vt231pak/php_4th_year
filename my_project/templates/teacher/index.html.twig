@@ -5,33 +5,21 @@
 {% block body %}
     <h1>Teacher index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for teacher in teachers %}
-            <tr>
-                <td>{{ teacher.id }}</td>
-                <td>{{ teacher.name }}</td>
-                <td>{{ teacher.email }}</td>
-                <td>
-                    <a href="{{ path('app_teacher_show', {'id': teacher.id}) }}">show</a>
-                    <a href="{{ path('app_teacher_edit', {'id': teacher.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <form method="get">
+        <input type="text" name="name" placeholder="Ім'я викладача" value="{{ app.request.get('name') }}">
+        <input type="number" name="itemsPerPage" value="{{ app.request.get('itemsPerPage', 10) }}" min="1">
+        <button type="submit">Фільтрувати</button>
+    </form>
 
-    <a href="{{ path('app_teacher_new') }}">Create new</a>
+    <ul>
+        {% for teacher in pagination %}
+            <li>{{ teacher.name }} ({{ teacher.email }})</li>
+        {% else %}
+            <li>Викладачів не знайдено.</li>
+        {% endfor %}
+    </ul>
+
+    {{ knp_pagination_render(pagination) }}
+    <a href="{{ path('app_teacher_new') }}">Створити нового викладача</a>
+
 {% endblock %}

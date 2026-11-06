@@ -7,9 +7,19 @@ use Illuminate\Http\Request;
 
 class EnrollmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $items = Enrollment::all();
+        $query = Enrollment::with(['student', 'course']);
+
+        if ($request->filled('student_id')) {
+            $query->where('student_id', $request->student_id);
+        }
+        if ($request->filled('course_id')) {
+            $query->where('course_id', $request->course_id);
+        }
+
+        $items = $query->paginate($request->input('itemsPerPage', 10));
+
         return view('enrollments.index', compact('items'));
     }
 

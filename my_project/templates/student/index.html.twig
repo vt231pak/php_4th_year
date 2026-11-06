@@ -5,18 +5,26 @@
 {% block body %}
     <h1>Student index</h1>
 
+    <form method="get" style="margin-bottom: 20px;">
+        <input type="text" name="name" placeholder="Ім'я" value="{{ app.request.get('name') }}">
+        <input type="text" name="email" placeholder="Email" value="{{ app.request.get('email') }}">
+        <input type="date" name="birthdate" value="{{ app.request.get('birthdate') }}">
+        <input type="number" name="itemsPerPage" min="1" max="100" value="{{ app.request.get('itemsPerPage', 10) }}">
+        <button type="submit">Фільтрувати</button>
+    </form>
+
     <table class="table">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Birthdate</th>
-                <th>actions</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Birthdate</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
-        {% for student in students %}
+        {% for student in pagination %}
             <tr>
                 <td>{{ student.id }}</td>
                 <td>{{ student.name }}</td>
@@ -29,11 +37,13 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="5">Нічого не знайдено</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+
+    {{ knp_pagination_render(pagination) }}
 
     <a href="{{ path('app_student_new') }}">Create new</a>
 {% endblock %}

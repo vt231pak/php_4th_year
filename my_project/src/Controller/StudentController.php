@@ -10,14 +10,40 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/student')]
 final class StudentController extends AbstractController{
     #[Route(name: 'app_student_index', methods: ['GET'])]
-    public function index(StudentRepository $studentRepository): Response
+    public function index(Request $request, StudentRepository $studentRepository, PaginatorInterface $paginator): Response
     {
+        $queryBuilder = $studentRepository->createQueryBuilder('s');
+
+        // Фільтрація
+        if ($request->query->get('name')) {
+            $queryBuilder->andWhere('s.name LIKE :name')
+                ->setParameter('name', '%' . $request->query->get('name') . '%');
+        }
+
+        if ($request->query->get('email')) {
+            $queryBuilder->andWhere('s.email LIKE :email')
+                ->setParameter('email', '%' . $request->query->get('email') . '%');
+        }
+
+        if ($request->query->get('birthdate')) {
+            $queryBuilder->andWhere('s.birthdate = :birthdate')
+                ->setParameter('birthdate', new \DateTime($request->query->get('birthdate')));
+        }
+
+        // Пагінація
+        $pagination = $paginator->paginate(
+            $queryBuilder, // query
+            $request->query->getInt('page', 1), // номер сторінки
+            $request->query->getInt('itemsPerPage', 10) // кількість елементів на сторінці
+        );
+
         return $this->render('student/index.html.twig', [
-            'students' => $studentRepository->findAll(),
+            'pagination' => $pagination,
         ]);
     }
 

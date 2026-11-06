@@ -7,9 +7,16 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $items = Course::all();
+        $query = Course::query();
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        $items = $query->paginate($request->input('itemsPerPage', 10));
+
         return view('courses.index', compact('items'));
     }
 

@@ -7,9 +7,19 @@ use Illuminate\Http\Request;
 
 class TeacherController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $items = Teacher::all();
+        $query = Teacher::query();
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+        if ($request->filled('email')) {
+            $query->where('email', 'like', '%' . $request->email . '%');
+        }
+
+        $items = $query->paginate($request->input('itemsPerPage', 10));
+
         return view('teachers.index', compact('items'));
     }
 
