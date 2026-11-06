@@ -11,9 +11,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
-
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+#[IsGranted('ROLE_MANAGER')]
 #[Route('/enrollment')]
 final class EnrollmentController extends AbstractController{
+    #[IsGranted('ROLE_MANAGER')]
     #[Route(name: 'app_enrollment_index', methods: ['GET'])]
     public function index(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
@@ -41,7 +43,7 @@ final class EnrollmentController extends AbstractController{
             'pagination' => $pagination
         ]);
     }
-
+    #[IsGranted('ROLE_MANAGER')]
     #[Route('/new', name: 'app_enrollment_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -61,7 +63,7 @@ final class EnrollmentController extends AbstractController{
             'form' => $form,
         ]);
     }
-
+    #[IsGranted('ROLE_MANAGER')]
     #[Route('/{id}', name: 'app_enrollment_show', methods: ['GET'])]
     public function show(Enrollment $enrollment): Response
     {
@@ -69,7 +71,7 @@ final class EnrollmentController extends AbstractController{
             'enrollment' => $enrollment,
         ]);
     }
-
+    #[IsGranted('ROLE_MANAGER')]
     #[Route('/{id}/edit', name: 'app_enrollment_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Enrollment $enrollment, EntityManagerInterface $entityManager): Response
     {
@@ -87,7 +89,7 @@ final class EnrollmentController extends AbstractController{
             'form' => $form,
         ]);
     }
-
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_enrollment_delete', methods: ['POST'])]
     public function delete(Request $request, Enrollment $enrollment, EntityManagerInterface $entityManager): Response
     {

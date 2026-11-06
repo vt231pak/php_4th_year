@@ -11,9 +11,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Knp\Component\Pager\PaginatorInterface;
-
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+#[IsGranted('ROLE_MANAGER')]
 #[Route('/course')]
 final class CourseController extends AbstractController{
+    #[IsGranted('ROLE_MANAGER')]
     #[Route(name: 'app_course_index', methods: ['GET'])]
     public function index(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
@@ -34,7 +36,7 @@ final class CourseController extends AbstractController{
             'pagination' => $pagination
         ]);
     }
-
+    #[IsGranted('ROLE_MANAGER')]
     #[Route('/new', name: 'app_course_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -54,7 +56,7 @@ final class CourseController extends AbstractController{
             'form' => $form,
         ]);
     }
-
+    #[IsGranted('ROLE_MANAGER')]
     #[Route('/{id}', name: 'app_course_show', methods: ['GET'])]
     public function show(Course $course): Response
     {
@@ -62,7 +64,7 @@ final class CourseController extends AbstractController{
             'course' => $course,
         ]);
     }
-
+    #[IsGranted('ROLE_MANAGER')]
     #[Route('/{id}/edit', name: 'app_course_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Course $course, EntityManagerInterface $entityManager): Response
     {
@@ -80,7 +82,7 @@ final class CourseController extends AbstractController{
             'form' => $form,
         ]);
     }
-
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_course_delete', methods: ['POST'])]
     public function delete(Request $request, Course $course, EntityManagerInterface $entityManager): Response
     {
